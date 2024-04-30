@@ -14,7 +14,7 @@ def read_focal_length(img_name):
             frac_f *= 120
             return int(frac_f)
         else:
-            return int(800)
+            return int(1000)
             # raise ValueError("Focal length is not found in the image metadata.")
 
 

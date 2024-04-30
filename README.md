@@ -14,7 +14,7 @@
 ### Running the Code
 * Command
     ```bash
-    python main.py [--indir $INDIR] [--e2e] [--cache]
+    python main.py [--indir $INDIR] [--e2e] [--desc] [--cache]
     # E.g.,
     # python3 main.py --indir ./data/parrington --cache
     ```
@@ -22,5 +22,6 @@
     ```bash
     --indir: Default is ../data/home.
     --e2e: Store-true. that the images are taken end-to-end.
+    --desc: option: sift / mops
     --cache: Store-true. Specifies whether to read preprocessed(cylindrical projected) images from cache.
     ```

@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 
-class RANSAC_aliner():
+class RANSAC_Aliner():
     def __init__(self) -> None:
         self.ransac_iter = 500
         self.threshold  = 8
@@ -26,5 +26,4 @@ class RANSAC_aliner():
                 best_shifts = np.mean(shifts[inlier_indices], axis = 0)
 
         shifts_y, shifts_x = best_shifts[0], best_shifts[1]
-
         return abs(round(shifts_x)), round(shifts_y)

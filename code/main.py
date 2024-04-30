@@ -17,6 +17,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--indir', type = str, default = '../data/home', help = 'Input directory')
     parser.add_argument('--e2e', action = 'store_true', help = 'If the images are taken end-to-end')
+    parser.add_argument('--desc', type = str, default = 'sift', help = 'Descriptor type')
     parser.add_argument('--cache', action = 'store_true', help = 'Read cylindrical projected images from cache')
 
     args = parser.parse_args()
@@ -27,9 +28,9 @@ class Image_Stitch_Solution():
     def __init__(self, args=None) -> None:
         self.args = args
         self.detector = detector.Harris_Corner()
-        self.descriptor = descriptor.SIFT()
+        self.descriptor = descriptor.MOPS() if(args.desc == 'mops') else descriptor.SIFT()
         self.matcher = matcher.Brute_Force_Matcher()
-        self.aligner = aligner.RANSAC_aliner()
+        self.aligner = aligner.RANSAC_Aliner()
         self.blender = blender.Linear_Blender()
 
     def solve(self, input_imgs):
@@ -50,7 +51,7 @@ class Image_Stitch_Solution():
         for keypoints, gray_blur_img in zip(detect_kps_list, detect_imgs_list):
             # 2. SIFT descriptors
             kp, des = self.descriptor.compute_descriptor(gray_blur_img, keypoints)
-            # kp, des = sift.compute_descriptor(img, keypoints)
+            # kp, des = self.descriptor.compute_descriptor(img, keypoints)
             kps_list.append(kp)
             descs_list.append(des)
         
@@ -59,7 +60,7 @@ class Image_Stitch_Solution():
         for i, img in enumerate(imgs[:-1]):
             matches = self.matcher.match(descs_list[i], descs_list[i+1])
             matches_imgs.append(matches)
-            # utils.plot_matching(img, imgs[i+1], kps_list[i], kps_list[i+1], good_matches)
+            utils.plot_matching(img, imgs[i+1], kps_list[i], kps_list[i+1], matches)
     
         print(f'[Pair-Wise Alignment] Computing Shifts Between Images')
         shifts_x, shifts_y = [0], [0]
@@ -91,6 +92,7 @@ class Image_Stitch_Solution():
 
         cv2.imshow('Panorama', stitch_img)
         cv2.waitKey(0)
+        # cv2.imwrite('panorama.png', stitch_img)
         return stitch_img
 
 
