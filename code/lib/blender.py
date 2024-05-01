@@ -2,9 +2,9 @@ import numpy as np
 import cv2
 
 class Linear_Blender():
-    def __init__(self) -> None:
+    def __init__(self, blend_ratio=0.1) -> None:
         # percentage of blending window
-        self.strength = 0.1
+        self.blend_ratio = blend_ratio
 
     def blend(self, new_img: np.ndarray, stitch_img: np.ndarray, sx, sy):
         '''
@@ -22,10 +22,9 @@ class Linear_Blender():
         blend_img = np.hstack((new_shifted_imgs[:, :new_right_bound], stitch_img[:, stitch_left_bound:]))
 
         # Create a linear alpha gradient for blending
-        half_blend_x = round(half_overlap_x * self.strength)
+        half_blend_x = round(half_overlap_x * self.blend_ratio)
         alpha_gradient = np.linspace(0.5, 0, half_blend_x)
-        for j in range(half_blend_x):
-            alpha = alpha_gradient[j]
+        for j, alpha in enumerate(alpha_gradient):
             blend_img[:, new_right_bound + j] = alpha * new_shifted_imgs[:, new_right_bound + j] + (1 - alpha) * stitch_img[:, stitch_left_bound + j]
             blend_img[:, new_right_bound - j] = (1 - alpha) * new_shifted_imgs[:, new_right_bound - j] + alpha * stitch_img[:, stitch_left_bound - j]
 

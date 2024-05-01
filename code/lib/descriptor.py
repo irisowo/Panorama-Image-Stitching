@@ -16,7 +16,6 @@ class DESCRIPTOR():
         self.sigma = 5
 
     def gray_gaussianBlurr(self, img):
-        # print('[SIFT] Convert img to grayscale and apply gaussian filter')
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         return cv2.GaussianBlur(gray_img, (self.ksize, self.ksize), self.sigma)
 
@@ -26,7 +25,7 @@ class DESCRIPTOR():
 
 class SIFT(DESCRIPTOR):
     def __call__(self):
-        print(". . . Using SIFT Descriptor . . .")
+        return 'SIFT'
 
     def compute_subpatch_descriptor(self, m, theta, bins = 8):
         # Assign theta to bins
@@ -57,6 +56,7 @@ class SIFT(DESCRIPTOR):
         # m : image gradients (magnitude)
         Iy, Ix = np.gradient(img)
         m = np.sqrt(np.sum((Ix ** 2, Iy ** 2), axis=0))
+        # m is weighted by a Gaussian in consideration of the distance from the keypoint
         m = cv2.GaussianBlur(m, (self.ksize_for_desc, self.ksize_for_desc), self.sigma_for_desc)
 
         # theta : gradient vector orientation
@@ -92,19 +92,16 @@ class SIFT(DESCRIPTOR):
 
 class MOPS(DESCRIPTOR):
     def __call__(self):
-        print(". . . Using MOPS Descriptor . . .")
+        return 'MOPS'
 
-    def comput_orientation_image(self, img):
+    def compute_image_rad(self, img):
         Iy, Ix = np.gradient(img)
-        # orientationImg = np.zeros(img.shape[:2])
-        # return np.degrees(np.arctan2(Iy.flatten(), Ix.flatten()).reshape(orientationImg.shape))
         return (np.arctan2(Iy, Ix)) % (2 * np.pi)
 
     def compute_descriptor(self, img, kps):
         h, w = img.shape[:2]
         img = self.gray_gaussianBlurr(img) if len(img.shape) == 3 else img
-        img = cv2.GaussianBlur(img, (self.ksize_for_desc, self.ksize_for_desc), self.sigma_for_desc) # same as sift
-        orientationImg = self.comput_orientation_image(img)
+        radImg = self.compute_image_rad(img)
 
         r = (40 * math.sqrt(2)) // 2 # times sqrt(2) to avoid overflow after rotation
         window_size = 8
@@ -114,7 +111,7 @@ class MOPS(DESCRIPTOR):
             row, col = kp
             if self.bounday_check(row, col, h, w, r):
                 continue
-            rad = orientationImg[row][col]
+            rad = radImg[row][col]
             rotM = np.array([[math.cos(rad), math.sin(rad), 0],
                              [-math.sin(rad), math.cos(rad), 0],
                              [0, 0, 1]])

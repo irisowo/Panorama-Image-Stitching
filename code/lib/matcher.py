@@ -4,7 +4,7 @@ import numpy as np
 
 class Brute_Force_Matcher():
     def __init__(self) -> None:
-        self.ratio = 0.75
+        self.ratio = 0.8
 
     def match(self, desc1, desc2):
         matches = []

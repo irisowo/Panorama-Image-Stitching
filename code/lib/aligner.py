@@ -4,7 +4,7 @@ import random
 
 class RANSAC_Aliner():
     def __init__(self) -> None:
-        self.ransac_iter = 500
+        self.ransac_iter = 1000
         self.threshold  = 8
 
     def align (self, kp1:np.ndarray, kp2: np.ndarray):
@@ -24,6 +24,7 @@ class RANSAC_Aliner():
                 best_inlier_indices = inlier_indices
                 # count twice if both x, y < threshold, count once if only one of them < threshold
                 best_shifts = np.mean(shifts[inlier_indices], axis = 0)
+
 
         shifts_y, shifts_x = best_shifts[0], best_shifts[1]
         return abs(round(shifts_x)), round(shifts_y)

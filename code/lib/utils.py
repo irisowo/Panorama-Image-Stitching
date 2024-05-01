@@ -4,6 +4,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def check_and_mkdir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 
 def read_images_and_focal_lengths(img_dir, startIdx=0):
     df = pd.read_csv(os.path.join(img_dir, 'focal_length.csv'), sep=',')
@@ -13,8 +17,33 @@ def read_images_and_focal_lengths(img_dir, startIdx=0):
     # change the start image from images[0] to images[startIdx]
     images2 = images[startIdx:] +  images[:startIdx]
     focal_length2 = focal_length[startIdx:].tolist() + focal_length[:startIdx].tolist()
-    print()
     return images2, focal_length2
+
+
+def crop(img, y_start, y_end):
+    cropped_img = img[y_start: y_end, :]
+    return cropped_img
+
+
+def plot_imgs(imgdir, img_names, figname, 
+              scale=5, 
+              figsize=(15, 5), 
+              wspace=0.0,
+              hspace=0.0,
+              vertical=False):
+              
+    imgs = [cv2.imread(os.path.join(imgdir, img_name)) for img_name in img_names]
+    titles = [img_name.split('.png')[0].split('_')[1] for img_name in img_names]
+    n = len(imgs)
+
+    fig, axes = plt.subplots(n, 1, figsize=figsize) if vertical else plt.subplots(1, n, figsize=figsize)
+    fig.subplots_adjust(left=0, right=1.0, top=1.0, bottom=0, wspace=wspace, hspace=hspace)
+    for i, (img, title) in enumerate(zip(imgs, titles)):
+        axes[i].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        axes[i].set_title(title, fontsize=3 * scale)
+        axes[i].axis('off')
+    # save the plot
+    plt.savefig(figname)
 
 
 def plot_matching(img1, img2, kps1, kps2, matches):
@@ -28,28 +57,25 @@ def plot_matching(img1, img2, kps1, kps2, matches):
     plt.show()
 
 
-def cylindrical_projection(img, f):
-    # Let s = f, center of the image = (y0, x0)
-    s = f
-    h, w, _= img.shape
-    y0, x0 = h / 2, w / 2
-    cylindrical_img= np.zeros_like(img, dtype=np.uint8)
+def do_experiments():
+    imgdir = '../data/experiment'
+    # read images from imgdir
+    prefix = 'match'
+    img_names = sorted([f for f in os.listdir(imgdir) if (f.endswith('.png') and f.startswith(prefix))])
+    plot_imgs(imgdir, img_names, os.path.join(imgdir, f'result_{prefix}.png'),figsize=(15, 5))
 
-    def _cylindrical_warping_pts(_y, _x):
-        dy, dx = _y - y0, _x - x0
-        h = dy / (dx ** 2 + f ** 2) ** 0.5
-        theta = np.arctan(dx / f)
-        return [round(y0 + (s * h)), round(x0 + (s * theta))]
+    prefix = 'e2e1'
+    img_names = sorted([f for f in os.listdir(imgdir) if (f.endswith('.png') and f.startswith(prefix))])
+    plot_imgs(imgdir, img_names, os.path.join(imgdir, f'result_{prefix}.png'), figsize=(15, 7), hspace=0.1, vertical=True)
 
-    # Warping
-    for y in range(h):
-      for x in range(w):
-        y_, x_ = _cylindrical_warping_pts(y, x)
-        cylindrical_img[y_, x_] = img[y, x]
-    
-    # Boundary
-    x_start = _cylindrical_warping_pts(h/2, 0)[1]
-    x_end = _cylindrical_warping_pts(h/2, w-1)[1] + 1
-    
-    return cylindrical_img.astype('uint8')[:, x_start:x_end]
+    prefix = 'blendr1'
+    img_names = sorted([f for f in os.listdir(imgdir) if (f.endswith('.png') and f.startswith(prefix))])
+    plot_imgs(imgdir, img_names, os.path.join(imgdir, f'result_{prefix}.png'), wspace=0.1)
 
+    prefix = 'blendr2'
+    img_names = sorted([f for f in os.listdir(imgdir) if (f.endswith('.png') and f.startswith(prefix))])
+    plot_imgs(imgdir, img_names, os.path.join(imgdir, f'result_{prefix}.png'), wspace=0.1)
+
+    prefix = 'align'
+    img_names = sorted([f for f in os.listdir(imgdir) if (f.endswith('.png') and f.startswith(prefix))])
+    plot_imgs(imgdir, img_names, os.path.join(imgdir, f'result_{prefix}.png'), wspace=0.1)
