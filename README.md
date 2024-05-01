@@ -96,18 +96,18 @@ $$
     * ![result_match](https://github.com/irisowo/Panorama-Image-Stitching/blob/main/data/experiment/result_match.png?raw=true)
 * ### Image Alignment
   * Let blend ratio = 0 for a clear view, and consider shifts in y
-  ![result_align](https://hackmd.io/_uploads/rkFO3b1GA.png)
+  ![result_align](https://github.com/irisowo/Panorama-Image-Stitching/blob/main/data/experiment/result_align.png?raw=true)
 
 * ### End-to-end alignment
   * Note that the overflow pixels are appeared at the top/bottom since we use np.roll
-  ![result_e2e1](https://hackmd.io/_uploads/BJuTlQkzA.jpg)
+  ![result_e2e1](https://github.com/irisowo/Panorama-Image-Stitching/blob/main/data/experiment/result_e2e1.png?raw=true)
 
 * ### Blending
   * #### blending ratio
     * Setting blending ratio to 0 means that there is no blending, while setting blending ratio to 1.0 means full blending within the overlapped region.
     * Though higher blending percentages seam the images smoother, there is a trade-off with potential ghosting effects. 
-    ![result_blendr1_](https://hackmd.io/_uploads/HJbrP-1MR.png)
-    ![result_blendr2_](https://hackmd.io/_uploads/S1-SwZkMA.png)
+    ![result_blendr1_](https://github.com/irisowo/Panorama-Image-Stitching/blob/main/data/experiment/result_blendr1.png?raw=true)
+    ![result_blendr2_](https://github.com/irisowo/Panorama-Image-Stitching/blob/main/data/experiment/result_blendr2.png?raw=true)
 
 ## 4. Result
 * ### Our images
