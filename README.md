@@ -40,7 +40,7 @@
 ### ${\color{orange}Step1:}$ Feature detection 
 * #### Harris corner detector
   * For each pixel, compute $R = detM-k(traceM)^2$ for the intensity changes. $M$ is as the follows, where $I_x$ and $I_y$ are the derivatives of image with respect to x and y-axis and $G_{\sigma=5}$ is a 3x3 gaussian kernal
-
+```math
     $$M=\begin{bmatrix} S_{xx} & S_{xy} \\\
       S_{xy} & S_{yy}
       \end{bmatrix} = \begin{bmatrix}
@@ -48,6 +48,7 @@
       G_{\sigma}I_yI_x & G_{\sigma}I_yI_y
       \end{bmatrix}
     $$
+```
 
 
 * Non-maximum suppression is applied to $R$
